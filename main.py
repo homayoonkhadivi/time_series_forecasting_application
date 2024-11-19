@@ -14,11 +14,31 @@ from statsmodels.tsa.holtwinters import ExponentialSmoothing
 
 # Custom pipeline loading function for loading the dataset
 def load_pipeline_data():
-    df = pd.read_csv("./ts_frame_sample.csv")
-    df['date'] = pd.to_datetime(df['date'])
-    df.set_index('date', inplace=True)
-    return df
+    """
+    Loads the dataset from a CSV file, converts the 'date' column to datetime,
+    and sets it as the index.
+    """
+    try:
+        df = pd.read_csv("./ts_frame_sample.csv")
 
+        # Convert 'date' column to datetime, handling errors
+        df['date'] = pd.to_datetime(df['date'], dayfirst=True, errors='coerce')
+
+        # Drop rows with invalid dates
+        if df['date'].isnull().any():
+            st.warning("Some rows with invalid dates were removed.")
+            df = df.dropna(subset=['date'])
+
+        # Set the 'date' column as the index
+        df.set_index('date', inplace=True)
+        return df
+
+    except FileNotFoundError:
+        st.error("CSV file not found. Ensure './ts_frame_sample.csv' exists.")
+    except Exception as e:
+        st.error(f"Unexpected error: {e}")
+        raise
+        
 # Define smoothing functions
 def loess_smoothing(data: pd.Series, frac: float = 0.05, it: int = 2, delta: float = 0.01) -> pd.Series:
     """Apply LOESS (Locally Estimated Scatterplot Smoothing) to the input time series data."""
