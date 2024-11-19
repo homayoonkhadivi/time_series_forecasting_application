@@ -14,13 +14,9 @@ from statsmodels.tsa.holtwinters import ExponentialSmoothing
 
 # Custom pipeline loading function for loading the dataset
 def load_pipeline_data():
-    #gts_dir = Path().cwd() / "sa_gs_growth_time_series_po_69ae6af6aad939182dd04e7654022b1d.pkl.xz"
-    #gts_results = GtsOutputData.from_pickle(gts_dir)
-    #ssid = SalesStatisticsIdentifier(code=code, stat_type=StatType.house)
     df = pd.read_csv("./ts_frame_sample.csv")
     df['date'] = pd.to_datetime(df['date'])
     df.set_index('date', inplace=True)
-
     return df
 
 # Define smoothing functions
